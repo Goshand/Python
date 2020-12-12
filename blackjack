@@ -1,0 +1,224 @@
+import random
+import os
+import fileinput
+
+class Card:
+    value=-1
+    suit=""
+    name=""
+    used=False
+    def __init__(self, suit, value, name):
+        self.value=value
+        self.suit=suit
+        self.name=name
+        self.used=False
+    
+    def __str__(self):
+        return self.name + self.suit
+
+class Hand:
+    cards=[]
+    value=0
+    player=""
+    def __init__(self, player):
+        self.player=player
+        self.cards=[]
+        self.value=0
+
+    def addCard(self, card):
+        self.cards += [card]
+        self.value = getHandValue(self.cards)
+        
+    def display(self):
+        for card in self.cards:
+            print str(card),
+        print
+
+deck=[]
+cardsremaining=52
+
+def shuffledeck():
+    del deck[:]
+    cardsremaining=52
+
+    for suit in ["\xE2\x99\xA5", "\xE2\x99\xA6", "\xE2\x99\xA0", "\xE2\x99\xA3"]:
+        for number in range(1,14):
+            name=str(number)
+            value=number
+            if number==1:
+                name="A"
+                value=11
+            elif number==11:
+                name="J"
+                value=10
+            elif number==12:
+                name="Q"
+                value=10
+            elif number==13:
+                name="K"
+                value=10
+
+            my_card=Card(suit, value, name)
+            deck.append(my_card)
+
+def drawCard():
+    global cardsremaining
+    randomValue = random.randint(0,51)
+    card=deck[randomValue]
+    while card.used==True:
+        randomValue = random.randint(0,51)
+        card=deck[randomValue]
+    card.used=True
+    cardsremaining=cardsremaining - 1
+    return card
+
+def drawSpecificCard(index):
+    return deck[index]
+
+def getHandValue(cards):
+    value=0
+    for card in cards:
+        if value >= 11 and card.name == "A":
+            value=value+1
+        else:
+            value=value+card.value
+        
+    return value
+
+def getNumber(prompt):
+    while 1==1:
+        entry=raw_input(prompt)
+        try:
+            number=int(entry)
+            return number 
+        except:
+            print "Invalid Entry"
+def writefile(filename, player, bank, newbank):
+    for line in fileinput.input(filename, inplace = True):
+        array = line.split()
+        name = array[0]
+        bank = array[1]
+        if name == player:
+            print line.replace(str(bank)), str(newbank)).rstrip()
+        else:
+            print line.rstrip()
+def getAmountOfMoney(filename, playertofind):
+    f=open(filename, "r")
+    for line in f:
+        array=line.split()
+        player=array[0]
+        bank=array[1]
+        if playertofind == player:
+            return bank
+    
+    f=open(filename,"a")
+    f.write(playertofind + " 2000" )
+    return 2000
+playagain=-1
+shuffledeck()
+player=raw_input("What is your name? ")
+bank=int(getAmountOfMoney"players.txt", player))
+if bank == 0:
+    if getNumber("Do you want more money? 1.Yes 2.No: ") == 1:
+        bank= 2000
+        writefile("players.txt", player, "0", "2000")
+
+while playagain != 2:
+    #clear the terminal
+    os.system("clear")
+    if bank == 0:
+        print "No money no honey!"
+        break
+
+    if cardsremaining < 15:
+        shuffledeck()
+
+    initialBank=bank
+
+    bet = bank + 1
+    while bet > bank:
+        bet=getNumber("You have " + str(bank) + ". How much would you like to bet? ")
+
+        if bet > bank:
+            print "You don't have that much"
+
+        os.system("clear")
+        my_hand=Hand(player)
+        my_hand.addCard(drawCard)
+
+        #play Hand
+
+        my_hand.addCard(drawCard())
+
+        my_hand.display()
+
+        print 
+        print "*******************"
+        print
+
+        his_hand=Hand("Dealer")
+        his_hand.addCard(drawCard())
+    
+        his_hand.display()
+        if my_hand.value == 21:
+            bank = bank + (bet * 1.5)
+            print "Black Jack! You win!"
+            playagain=getNumber("Would you like to play again? 1.Yes 2.No: ")
+            if playagain == 1:
+                continue 
+            else:
+                break
+        selection=-1
+        while selection !=2:
+            print "1.Hit"
+            print "2.Stand"
+            if len(my_hand.cards) == 2:
+                print "3.Double"
+            print "4.Split"
+
+            selection=getNumber("Enter a number: ")
+            if selection == 1:
+                print "I will hit"
+                my_hand.addCard(drawCard())
+                print 
+                my_hand.display()
+                if my_hand.value > 21:
+                    print "You busted!"
+                    break
+                elif selection == 2:
+                    print "I will stand"
+                elif selection == 3:
+                    if bank < bet * 2 :
+                        print "No favors"
+                    else:
+                        bet=bet * 2
+                        my_hand.addCard(drawCard())
+                        print 
+                        my_hand.display()
+                        break
+        his_hand.addCard(drawCard())
+        print
+        his_hand.display()
+        while his_hand.value < 17 and my_hand.value <= 21:
+            his_hand.addCard(drawCard())
+            print
+            his_hand.display()
+        
+        if my_hand.value > 21:
+            bank = bank - bet
+            print my_hand.player + " Busted. " + his_hand.player + " wins!"
+        elif his_hand.value > 21:
+            bank = bank + bet
+            print his_hand.player + " Busted. " + my_hand.player + " wins!"
+        elif his_hand.value > my_hand.Value:
+            bank = bank - bet
+            print his_hand.player + " wins!"
+        elif my_hand.value > his_hand.value:
+            bank = bank + bet
+            print my_hand.player + " wins!"
+        else:
+            print "It's a tie!"
+        
+        writefile("players.txt", player, initialBank, bank)
+
+        playagain=getNumber("Would you like to play again? 1.Yes 2.No: ")
