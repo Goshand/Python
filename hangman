@@ -1,0 +1,106 @@
+class Letter:
+        def __init__(self, character):
+                self.visible = False
+                self.character = character
+                if character == " " or character == "'":
+                        self.visible = True
+
+        def display(self):
+                if self.visible == True:
+                        return self.character
+                else:
+                        return "_"
+
+
+
+letters=[]
+word="I'm done"
+#Create a list of objects from Letter class
+for letter in word:
+        a_letter=Letter(letter)
+        letters+=[a_letter]
+
+gjdhgoue
+strikes=0
+while True:
+        guessed_letter=input("What letter would you like to guess? ")
+        print()
+        got_right_answer=False
+        for letter in letters:
+                if guessed_letter.lower() == letter.character.lower():
+                        letter.visible = True
+                        got_right_answer = True
+
+        if got_right_answer == False:
+                strikes+=1
+#Object.method()
+        for letter in letters:
+                print(letter.display() + " ", end='')
+
+        print()
+        print(strikes)
+        all_visible=True
+        for letter in letters:
+                if letter.visible == False:
+                        all_visible=False
+        if all_visible == True:
+                print("You win")
+                break
+        if strikes == 5:
+                print("You lose")
+                break
+'''
+foo=Letter("g")
+foo.visible = True
+print(foo.display())
+
+bar=Letter("d")
+print(bar.display())
+
+
+words=["Hello World", "python", "linux", "server", "ip address"]
+word=words[0]
+letters=[]
+strikes=0
+visible=[]
+
+#Show placeholders for letters
+def draw_board():
+        for i in range(len(letters)):
+                if visible[i] == False:
+                        print("_ ", end='')
+                else:
+                        print(letters[i]+ " ", end='')
+        print("Strikes:" + str(strikes))
+
+
+for letter in word:
+        letters+=[letter]
+        if letter == " ":
+                visible+=[True]
+        else:
+                visible+=[False]
+
+draw_board()
+
+
+while True:
+        guess=input("What letter would you like to guess? ")
+        found=False
+        for i in range(len(letters)):
+                if guess.lower() == letters[i].lower():
+                        visible[i]=True
+                        found=True
+        if found == False:
+                strikes+=1
+
+        draw_board()
+
+        if strikes >= 5:
+                print("You lose!")
+                break
+
+        if not False in visible:
+                print("Congrats! You win!")
+                break
+'''
