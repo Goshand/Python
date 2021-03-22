@@ -1,0 +1,51 @@
+from netdiscover import *
+from nmap import *
+
+scanner = nmap.PortScanner()
+
+print("Welcome, this is a simple automation tool")
+
+print("1.NetDiscover")
+print("2.Nmap")
+
+service=input("Pick service type\n")
+
+if service==1:
+        disc=Discover()
+        range=raw_input("What IP range\n")
+        devices=disc.scan(ip_range=range)
+        print(devices)
+
+if service==2:
+        ip_addr = input("Enter your IP to scan: \n")
+        print("You entered: ", ip_addr)
+        type(ip_addr)
+
+        resp=input("Please enter type of scan
+                1)SYN ACK Scan
+                2)UDP Scan
+                3) Comprehensive Scan \n")
+        print("You selected: ", resp)
+        if resp == '1':
+                print("Nmap Version: ", scanner.nmap_version())
+                scanner.scan(ip_addr, '1-1024', '-v -sS')
+                print(scanner.scaninfo())
+                print("Ip Status: ", scanner[ip_addr].state())
+                print(scanner[ip_addr].all_protocols())
+                print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
+        elif resp == '2':
+                print("Nmap Version: ", scanner.nmap_version())
+                scanner.scan(ip_addr, '1-1024', '-v -sU')
+                print(scanner.scaninfo())
+                print("Ip Status: ", scanner[ip_addr].state())
+                print(scanner[ip_addr].all_protocols())
+                print("Open Ports: ", scanner[ip_addr]['udp'].keys())
+        elif resp == '3':
+                print("Nmap Version: ", scanner.nmap_version())
+                scanner.scan(ip_addr, '1-1024', '-v -sS -sV -sC -A -O')
+                print(scanner.scaninfo())
+                print("Ip Status: ", scanner[ip_addr].state())
+                print(scanner[ip_addr].all_protocols())
+                print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
+        else 
+                print("Please pick correct number")
