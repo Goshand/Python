@@ -1,0 +1,45 @@
+words=["Hello World", "python", "linux", "server", "ip address"]
+word=words[0]
+letters=[]
+strikes=0
+visible=[]
+
+#Show placeholders for letters
+def draw_board():
+        for i in range(len(letters)):
+                if visible[i] == False:
+                        print("_ ", end='')
+                else:
+                        print(letters[i]+ " ", end='')
+        print("Strikes:" + str(strikes))
+
+
+for letter in word:
+        letters+=[letter]
+        if letter == " ":
+                visible+=[True]
+        else:
+                visible+=[False]
+
+draw_board()
+
+
+while True:
+        guess=input("What letter would you like to guess? ")
+        found=False
+        for i in range(len(letters)):
+                if guess.lower() == letters[i].lower():
+                        visible[i]=True
+                        found=True
+        if found == False:
+                strikes+=1
+
+        draw_board()
+
+        if strikes >= 5:
+                print("You lose!")
+                break
+
+        if not False in visible:
+                print("Congrats! You win!")
+                break
